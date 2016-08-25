@@ -1,7 +1,9 @@
 # isis-wicket-url
-A demonstration project showing how to add an override to an Apache Isis property (in this example, String), in order to render it differently in the Wicket UI.
+A demonstration project showing how to add an override to an [Apache Isis](http://isis.apache.org/) property (in this example, String), in order to render it differently in the Wicket UI.
 
 In this example, the String property will be rendered as a click-able URL, when the proerty is viewed in a collection.
+
+Note: The original project was generated using the Apache Isis "simpleapp-archetype" archetype. Thereafter I edited the generated code to introduce the annotation, the factories, the updated Wicket components in a new module called [extras](https://github.com/kev-m/isis-wicket-url/tree/master/extras).
 
 The various stages have been separated into individual commits:
 
