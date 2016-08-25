@@ -38,138 +38,118 @@ import org.apache.isis.applib.services.repository.RepositoryService;
 import org.apache.isis.applib.services.title.TitleService;
 import org.apache.isis.applib.util.ObjectContracts;
 
-@javax.jdo.annotations.PersistenceCapable(
-        identityType=IdentityType.DATASTORE,
-        schema = "simple"
-)
-@javax.jdo.annotations.DatastoreIdentity(
-        strategy=javax.jdo.annotations.IdGeneratorStrategy.IDENTITY,
-         column="id")
-@javax.jdo.annotations.Version(
-        strategy= VersionStrategy.DATE_TIME,
-        column="version")
-@javax.jdo.annotations.Queries({
-        @javax.jdo.annotations.Query(
-                name = "findByName", language = "JDOQL",
-                value = "SELECT "
-                        + "FROM domainapp.dom.simple.SimpleObject "
-                        + "WHERE name.indexOf(:name) >= 0 ")
-})
-@javax.jdo.annotations.Unique(name="SimpleObject_name_UNQ", members = {"name"})
-@DomainObject(
-        publishing = Publishing.ENABLED,
-        auditing = Auditing.ENABLED
-)
+@javax.jdo.annotations.PersistenceCapable(identityType = IdentityType.DATASTORE, schema = "simple")
+@javax.jdo.annotations.DatastoreIdentity(strategy = javax.jdo.annotations.IdGeneratorStrategy.IDENTITY, column = "id")
+@javax.jdo.annotations.Version(strategy = VersionStrategy.DATE_TIME, column = "version")
+@javax.jdo.annotations.Queries({ @javax.jdo.annotations.Query(name = "findByName", language = "JDOQL", value = "SELECT "
+		+ "FROM domainapp.dom.simple.SimpleObject " + "WHERE name.indexOf(:name) >= 0 ") })
+@javax.jdo.annotations.Unique(name = "SimpleObject_name_UNQ", members = { "name" })
+@DomainObject(publishing = Publishing.ENABLED, auditing = Auditing.ENABLED)
 public class SimpleObject implements Comparable<SimpleObject> {
 
-    //region > title
-    public TranslatableString title() {
-        return TranslatableString.tr("Object: {name}", "name", getName());
-    }
-    //endregion
+	// region > title
+	public TranslatableString title() {
+		return TranslatableString.tr("Object: {name}", "name", getName());
+	}
+	// endregion
 
-    //region > constructor
-    public SimpleObject(final String name) {
-        setName(name);
-    }
-    //endregion
+	// region > constructor
+	public SimpleObject(final String name) {
+		setName(name);
+	}
+	// endregion
 
-    //region > name (read-only property)
-    public static final int NAME_LENGTH = 40;
+	// region > name (read-only property)
+	public static final int NAME_LENGTH = 40;
 
-    @javax.jdo.annotations.Column(allowsNull = "false", length = NAME_LENGTH)
-    private String name;
-    @Property(
-            editing = Editing.DISABLED
-    )
-    public String getName() {
-        return name;
-    }
-    public void setName(final String name) {
-        this.name = name;
-    }
-    //endregion
+	@javax.jdo.annotations.Column(allowsNull = "false", length = NAME_LENGTH)
+	private String name;
 
-    //region > updateName (action)
-    public static class UpdateNameDomainEvent extends ActionDomainEvent<SimpleObject> {}
-    @Action(
-            command = CommandReification.ENABLED,
-            publishing = Publishing.ENABLED,
-            semantics = SemanticsOf.IDEMPOTENT,
-            domainEvent = UpdateNameDomainEvent.class
-    )
-    public SimpleObject updateName(@ParameterLayout(named="Name") final String name) {
-        setName(name);
-        return this;
-    }
-    public String default0UpdateName() {
-        return getName();
-    }
-    public TranslatableString validate0UpdateName(final String name) {
-        return name != null && name.contains("!")? TranslatableString.tr("Exclamation mark is not allowed"): null;
-    }
+	@Property(editing = Editing.DISABLED)
+	public String getName() {
+		return name;
+	}
 
-    //endregion
+	public void setName(final String name) {
+		this.name = name;
+	}
+	// endregion
 
-    //region > notes (editable property)
-    public static final int NOTES_LENGTH = 4000;
+	// region > updateName (action)
+	public static class UpdateNameDomainEvent extends ActionDomainEvent<SimpleObject> {
+	}
 
-    public static class NotesDomainEvent extends PropertyDomainEvent<SimpleObject,String> {}
-    @javax.jdo.annotations.Column(
-            allowsNull="true",
-            length = NOTES_LENGTH
-    )
-    private String notes;
-    @Property(
-            command = CommandReification.ENABLED,
-            publishing = Publishing.ENABLED,
-            domainEvent = NotesDomainEvent.class
-    )
-    public String getNotes() {
-        return notes;
-    }
-    public void setNotes(final String notes) {
-        this.notes = notes;
-    }
-    //endregion
+	@Action(command = CommandReification.ENABLED, publishing = Publishing.ENABLED, semantics = SemanticsOf.IDEMPOTENT, domainEvent = UpdateNameDomainEvent.class)
+	public SimpleObject updateName(@ParameterLayout(named = "Name") final String name) {
+		setName(name);
+		return this;
+	}
 
-    //region > delete (action)
-    public static class DeleteDomainEvent extends ActionDomainEvent<SimpleObject> {}
-    @Action(
-            domainEvent = DeleteDomainEvent.class,
-            semantics = SemanticsOf.NON_IDEMPOTENT_ARE_YOU_SURE
-    )
-    public void delete() {
-        final String title = titleService.titleOf(this);
-        messageService.informUser(String.format("'%s' deleted", title));
-        repositoryService.remove(this);
-    }
+	public String default0UpdateName() {
+		return getName();
+	}
 
-    //endregion
+	public TranslatableString validate0UpdateName(final String name) {
+		return name != null && name.contains("!") ? TranslatableString.tr("Exclamation mark is not allowed") : null;
+	}
 
-    //region > toString, compareTo
-    @Override
-    public String toString() {
-        return ObjectContracts.toString(this, "name");
-    }
-    @Override
-    public int compareTo(final SimpleObject other) {
-        return ObjectContracts.compare(this, other, "name");
-    }
+	// endregion
 
-    //endregion
+	// region > notes (editable property)
+	public static final int NOTES_LENGTH = 4000;
 
-    //region > injected dependencies
+	public static class NotesDomainEvent extends PropertyDomainEvent<SimpleObject, String> {
+	}
 
-    @javax.inject.Inject
-    RepositoryService repositoryService;
+	@javax.jdo.annotations.Column(allowsNull = "true", length = NOTES_LENGTH)
+	private String notes;
 
-    @javax.inject.Inject
-    TitleService titleService;
+	@Property(command = CommandReification.ENABLED, publishing = Publishing.ENABLED, domainEvent = NotesDomainEvent.class)
+	public String getNotes() {
+		return notes;
+	}
 
-    @javax.inject.Inject
-    MessageService messageService;
+	public void setNotes(final String notes) {
+		this.notes = notes;
+	}
+	// endregion
 
-    //endregion
+	// region > delete (action)
+	public static class DeleteDomainEvent extends ActionDomainEvent<SimpleObject> {
+	}
+
+	@Action(domainEvent = DeleteDomainEvent.class, semantics = SemanticsOf.NON_IDEMPOTENT_ARE_YOU_SURE)
+	public void delete() {
+		final String title = titleService.titleOf(this);
+		messageService.informUser(String.format("'%s' deleted", title));
+		repositoryService.remove(this);
+	}
+
+	// endregion
+
+	// region > toString, compareTo
+	@Override
+	public String toString() {
+		return ObjectContracts.toString(this, "name");
+	}
+
+	@Override
+	public int compareTo(final SimpleObject other) {
+		return ObjectContracts.compare(this, other, "name");
+	}
+
+	// endregion
+
+	// region > injected dependencies
+
+	@javax.inject.Inject
+	RepositoryService repositoryService;
+
+	@javax.inject.Inject
+	TitleService titleService;
+
+	@javax.inject.Inject
+	MessageService messageService;
+	// endregion
 
 }
