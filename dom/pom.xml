@@ -56,6 +56,11 @@
             <artifactId>isis-core-unittestsupport</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>myapp-extras</artifactId>
+        </dependency>        
 
         <!-- Bytecode libraries (for mocking) -->
         <dependency>

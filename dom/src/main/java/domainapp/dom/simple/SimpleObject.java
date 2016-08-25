@@ -38,6 +38,8 @@ import org.apache.isis.applib.services.repository.RepositoryService;
 import org.apache.isis.applib.services.title.TitleService;
 import org.apache.isis.applib.util.ObjectContracts;
 
+import isis.example.IsUrl;
+
 @javax.jdo.annotations.PersistenceCapable(identityType = IdentityType.DATASTORE, schema = "simple")
 @javax.jdo.annotations.DatastoreIdentity(strategy = javax.jdo.annotations.IdGeneratorStrategy.IDENTITY, column = "id")
 @javax.jdo.annotations.Version(strategy = VersionStrategy.DATE_TIME, column = "version")
@@ -56,6 +58,7 @@ public class SimpleObject implements Comparable<SimpleObject> {
 	// region > constructor
 	public SimpleObject(final String name) {
 		setName(name);
+		setUrl("file://"+name);
 	}
 	// endregion
 
@@ -94,6 +97,20 @@ public class SimpleObject implements Comparable<SimpleObject> {
 	}
 
 	// endregion
+
+	// region > url (editable property)
+	@javax.jdo.annotations.Column(allowsNull = "false", length = NAME_LENGTH)
+	private String url;
+	@IsUrl
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	// endregion
+
 
 	// region > notes (editable property)
 	public static final int NOTES_LENGTH = 4000;
@@ -150,6 +167,7 @@ public class SimpleObject implements Comparable<SimpleObject> {
 
 	@javax.inject.Inject
 	MessageService messageService;
+
 	// endregion
 
 }
